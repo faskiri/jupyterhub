@@ -1,0 +1,7 @@
+#!/bin/bash -ex
+ip=$(./masterips | head -n 1)
+scp -i jupyterhub-ssh-key.pem.txt \
+  -r swarm docker@$ip:~/
+ssh -i jupyterhub-ssh-key.pem.txt \
+  docker@$ip \
+  docker stack deploy -c swarm/docker-compose.yml jupyterhubstack

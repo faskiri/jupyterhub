@@ -1,0 +1,17 @@
+aws s3 cp aws/Docker.tmpl s3://cloudxlab/testing/Docker.tmpl
+aws cloudformation create-stack \
+  --stack-name JupyterHubStack \
+  --template-url https://s3.amazonaws.com/cloudxlab/testing/Docker.tmpl \
+  --parameters \
+      ParameterKey=KeyName,ParameterValue=jupyterhub-ssh-key \
+      ParameterKey=InstanceType,ParameterValue=t2.micro \
+      ParameterKey=ManagerInstanceType,ParameterValue=t2.micro \
+      ParameterKey=ClusterSize,ParameterValue=1 \
+      ParameterKey=ManagerSize,ParameterValue=1 \
+      ParameterKey=EnableSystemPrune,ParameterValue=yes \
+      ParameterKey=EnableCloudWatchLogs,ParameterValue=no \
+      ParameterKey=WorkerDiskSize,ParameterValue=20 \
+      ParameterKey=WorkerDiskType,ParameterValue=standard \
+      ParameterKey=ManagerDiskSize,ParameterValue=20 \
+      ParameterKey=ManagerDiskType,ParameterValue=standard \
+  --capabilities CAPABILITY_IAM

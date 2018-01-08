@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+import subprocess
+import json
+
+def master_instances():
+    data = subprocess.check_output('aws cloudformation describe-stacks  --stack-name JupyterHubStack'.split())
+    stack_id = None
+    for s in json.loads(data)['Stacks']:
+        stack_id = s['StackId']
+        break
+
+    data = subprocess.check_output([
+        'aws',
+        'ec2',
+        'describe-instances',
+        '--filters',
+        'Name=tag:aws:cloudformation:stack-id,Values=%s' % stack_id,
+        'Name=tag:swarm-node-type,Values=manager'
+        ])
+
+    parsed = json.loads(data)
+    instances = []
+    for r in parsed['Reservations']:
+        for i in r['Instances']:
+            instances.append(i)
+
+
+    return instances
+
+def master_ips():
+    ips = []
+    for mi in master_instances():
+        ips.append(mi['PublicIpAddress'])
+    return ips
+
+if __name__ == '__main__':
+    for i in master_ips():
+        print i
